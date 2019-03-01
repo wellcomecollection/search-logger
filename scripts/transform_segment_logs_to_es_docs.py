@@ -10,6 +10,7 @@ def transform(json_string):
     try:
         if data["context"]["ip"] == "0.0.0.0":
             es_doc = {
+                "messageId": data["messageId"],
                 "anonymousId": data["anonymousId"],
                 "page": data["context"]["page"],
                 "event": data["event"],
@@ -17,7 +18,7 @@ def transform(json_string):
                 "receivedAt": data["receivedAt"]
             }
 
-            with open("{}/{}.json".format(docs_directory, es_doc["anonymousId"]), "w", ) as outfile:
+            with open("{}/{}.json".format(docs_directory, es_doc["messageId"]), "w", ) as outfile:
                 json.dump(json.dumps(es_doc), outfile)
     except:
         print(data)

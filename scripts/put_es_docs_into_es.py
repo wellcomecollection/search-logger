@@ -19,7 +19,7 @@ try:
         with open("{}/{}".format(docs_directory, filename), "r", encoding="ISO-8859-1") as f:
             data = json.loads(json.load(f))
             res = es.index(
-                index="search_logs", id=data["anonymousId"], doc_type="search_log", body=data
+                index="search_logs", id=data["messageId"], doc_type="search_log", body=data
             )
 except Exception as e:
     raise Exception(e)
