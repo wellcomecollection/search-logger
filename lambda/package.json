@@ -1,0 +1,8 @@
+{
+  "name": "@weco/search-logger-kinesis-to-es-lambda",
+  "description": "Copy items from a AWS Kinesis stream to out Elastic cluster",
+  "license": "MIT",
+  "dependencies": {
+    "elasticsearch": "^15.4.1"
+  }
+}
