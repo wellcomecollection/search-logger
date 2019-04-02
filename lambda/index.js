@@ -12,6 +12,14 @@ exports.handler = function(event, context) {
     try {
       // We stringify the payload to remove unicode etc
       const json = JSON.parse(JSON.stringify(payload));
+      const network =
+        payload.context.ip === '195.143.129.132'
+          ? 'StaffCorporateDevices'
+          : payload.context.ip === '195.143.129.232'
+          ? 'Wellcome-WiFi'
+          : null;
+
+      json.network = network;
       return [
         {
           index: {
