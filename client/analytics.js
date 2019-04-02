@@ -81,45 +81,33 @@
     }, {});
 
     if (workPageMatch) {
-      analytics.track(
-        'Catalogue View Work',
-        {
-          resource: {
-            type: 'Work',
-            title: document.title.replace(' | Wellcome Collection', ''),
-            id: workPageMatch[1]
-          },
-          query: query,
-          toggles: toggles
+      analytics.track('Catalogue View Work', {
+        resource: {
+          type: 'Work',
+          title: document.title.replace(' | Wellcome Collection', ''),
+          id: workPageMatch[1]
         },
-        { context: { ip: '0.0.0.0' } }
-      );
+        query: query,
+        toggles: toggles
+      });
     } else if (itemPageMatch) {
-      analytics.track(
-        'Catalogue View Item',
-        {
-          resource: {
-            type: 'Item',
-            title: document.title.replace(' | Wellcome Collection', ''),
-            id: itemPageMatch[1]
-          },
-          query: query,
-          toggles: toggles
+      analytics.track('Catalogue View Item', {
+        resource: {
+          type: 'Item',
+          title: document.title.replace(' | Wellcome Collection', ''),
+          id: itemPageMatch[1]
         },
-        { context: { ip: '0.0.0.0' } }
-      );
+        query: query,
+        toggles: toggles
+      });
     } else {
-      analytics.track(
-        'Catalogue Search',
-        {
-          resource: {
-            type: 'ResultList'
-          },
-          query: query,
-          toggles: toggles
+      analytics.track('Catalogue Search', {
+        resource: {
+          type: 'ResultList'
         },
-        { context: { ip: '0.0.0.0' } }
-      );
+        query: query,
+        toggles: toggles
+      });
     }
   }
 })();
