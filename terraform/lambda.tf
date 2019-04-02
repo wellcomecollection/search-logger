@@ -65,3 +65,7 @@ resource "aws_lambda_event_source_mapping" "search_logger_kinesis_to_es_lambda_s
   function_name     = "${aws_lambda_function.search_logger_kinesis_to_es_lambda.arn}"
   starting_position = "LATEST"
 }
+
+output "lambda_s3_version" {
+  value = "${data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.version_id}"
+}

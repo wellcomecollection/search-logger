@@ -8,14 +8,13 @@ exports.handler = function(event, context) {
   console.log('Record count: ' + event.Records.length);
 
   const body = event.Records.map(function(record) {
-    const payload = new Buffer(record.kinesis.data, 'base64').toString('ascii');
+    const payload = new Buffer(record.kinesis.data, 'base64').toString('utf-8');
     try {
-      // We stringify the payload to remove unicode etc
-      const json = JSON.parse(JSON.stringify(payload));
+      const json = JSON.parse(payload);
       const network =
-        payload.context.ip === '195.143.129.132'
+        json.context.ip === '195.143.129.132'
           ? 'StaffCorporateDevices'
-          : payload.context.ip === '195.143.129.232'
+          : json.context.ip === '195.143.129.232'
           ? 'Wellcome-WiFi'
           : null;
 
@@ -25,7 +24,7 @@ exports.handler = function(event, context) {
           index: {
             _index: 'search_logs',
             _type: 'search_log',
-            _id: payload.messageId
+            _id: json.messageId
           }
         },
         json

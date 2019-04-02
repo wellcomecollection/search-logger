@@ -2,3 +2,4 @@ node_modules/
 *.tfvars
 *.state
 .terraform/
+search_logger_kinesis_to_es_lambda.zip
