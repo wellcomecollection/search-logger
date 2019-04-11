@@ -19,16 +19,23 @@ exports.handler = function(event, context) {
           : null;
 
       json.network = network;
-      return [
-        {
-          index: {
-            _index: 'search_logs',
-            _type: 'search_log',
-            _id: json.messageId
-          }
-        },
-        json
-      ];
+      delete json.context.ip;
+
+      // If we don't have a service, skip over it
+      return json.properties.service
+        ? [
+            {
+              index: {
+                _index: json.properties.service,
+                // I don't really care what this is called, but annoyingly it's
+                // hard to change on a service per service basis.
+                _type: 'search_log',
+                _id: json.messageId
+              }
+            },
+            json
+          ]
+        : [];
     } catch (e) {
       console.error(e, payload);
       return;
