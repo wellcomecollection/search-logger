@@ -4,6 +4,8 @@ const client = new elasticsearch.Client({
   httpAuth: `${process.env.ES_USERNAME}:${process.env.ES_PASSWORD}`
 });
 
+const validServices = ['search_logs', 'relevance_rating'];
+
 exports.handler = function(event, context) {
   console.log('Record count: ' + event.Records.length);
 
@@ -22,7 +24,7 @@ exports.handler = function(event, context) {
       delete json.context.ip;
 
       // If we don't have a service, skip over it
-      return json.properties.service
+      return validServices.indexOf(json.properties.service) !== -1
         ? [
             {
               index: {
