@@ -3,10 +3,6 @@ locals {
   lambda_bucket_name = "search-logger"
 }
 
-variable "es_url" {}
-variable "es_username" {}
-variable "es_password" {}
-
 data "aws_iam_policy_document" "search_logger_kinesis_to_es_lambda_policy_document" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -86,14 +82,6 @@ resource "aws_lambda_function" "search_logger_kinesis_to_es_lambda" {
   s3_key            = "${data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.key}"
   s3_object_version = "${data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.version_id}"
   publish           = true
-
-  environment = {
-    variables = {
-      ES_URL      = "${var.es_url}"
-      ES_USERNAME = "${var.es_username}"
-      ES_PASSWORD = "${var.es_password}"
-    }
-  }
 }
 
 resource "aws_lambda_event_source_mapping" "search_logger_kinesis_to_es_lambda_source_mapping" {
