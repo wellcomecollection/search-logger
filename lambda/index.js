@@ -1,14 +1,22 @@
 const elasticsearch = require('elasticsearch');
-const client = new elasticsearch.Client({
-  host: process.env.ES_URL,
-  httpAuth: `${process.env.ES_USERNAME}:${process.env.ES_PASSWORD}`
-});
 
+let esClient;
+function setEsClient(credentials) {
+  esClient = new elasticsearch.Client({
+    host: credentials.url,
+    httpAuth: `${credentials.username}:${credentials.password}`
+  });
+}
+
+const AWS = require('aws-sdk');
+const region = 'eu-west-1';
+const secretName = 'prod/SearchLogger/es_details';
+const secretsManager = new AWS.SecretsManager({
+  region: region
+});
 const validServices = ['search_logs', 'relevance_rating'];
 
-exports.handler = function(event, context) {
-  console.log('Record count: ' + event.Records.length);
-
+function processEvent(event, context, callback) {
   const body = event.Records.map(function(record) {
     const payload = new Buffer(record.kinesis.data, 'base64').toString('utf-8');
     try {
@@ -24,20 +32,30 @@ exports.handler = function(event, context) {
       delete json.context.ip;
 
       // If we don't have a service, skip over it
-      return validServices.indexOf(json.properties.service) !== -1
-        ? [
-            {
-              index: {
-                _index: json.properties.service,
-                // I don't really care what this is called, but annoyingly it's
-                // hard to change on a service per service basis.
-                _type: 'search_log',
-                _id: json.messageId
-              }
-            },
-            json
-          ]
-        : [];
+      const service = json.properties.service;
+      const validService = validServices.indexOf(service) !== -1;
+
+      if (validService) {
+        console.info(`Creating record for valid service: ${service}`);
+        return [
+          {
+            index: {
+              _index: json.properties.service,
+              // We don't really care what this is called, but annoyingly it's
+              // hard to change on a service per service basis.
+              _type: 'search_log',
+              _id: json.messageId
+            }
+          },
+          json
+        ];
+      } else {
+        console.info(
+          `Not creating record for invalid service: ${service}`,
+          payload
+        );
+        return [];
+      }
     } catch (e) {
       console.error(e, payload);
       return;
@@ -48,8 +66,37 @@ exports.handler = function(event, context) {
       return acc.concat(tuple);
     }, []);
 
-  client.bulk({ body: body }, function(err, resp) {
-    if (err) console.error(err);
-    else console.log('Success!');
-  });
+  if (body.length > 0) {
+    esClient.bulk({ body: body }, function(err, resp) {
+      if (err) console.error(err);
+      else console.log('Success!');
+    });
+  }
+}
+
+exports.handler = function(event, context) {
+  if (esClient) {
+    processEvent(event, context);
+  } else {
+    secretsManager.getSecretValue({ SecretId: secretName }, function(
+      err,
+      data
+    ) {
+      if (err) {
+        console.info('Secrets Manager error');
+        console.error(err);
+      } else {
+        console.info('Secrets Manager success');
+        try {
+          const esCredentials = JSON.parse(data.SecretString);
+          setEsClient(esCredentials);
+          processEvent(event, context);
+        } catch (e) {
+          console.error(
+            'Secrets Manager error: `SecretString` was not a valid JSON string'
+          );
+        }
+      }
+    });
+  }
 };
