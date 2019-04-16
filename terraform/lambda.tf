@@ -21,9 +21,45 @@ data "aws_iam_policy_document" "search_logger_kinesis_to_es_lambda_policy_docume
   }
 }
 
+data "aws_iam_policy_document" "kms_decrypt_env_vars" {
+  statement {
+    actions   = ["kms:Decrypt"]
+    resources = ["${aws_kms_key.lambda_env_vars.arn}"]
+  }
+}
+
+data "aws_iam_policy_document" "secrets_manager_es_details_read" {
+  statement {
+    actions   = ["secretsmanager:Get*"]
+    resources = ["${data.aws_secretsmanager_secret.es_details.arn}"]
+  }
+}
+
+resource "aws_iam_policy" "search_logger_kinesis_to_es_kms_decrypt_policy" {
+  name        = "SearchLoggerKinesisToEsLambdaDecryptKMS"
+  description = "Allow the decrypting of keys via KMS"
+  policy      = "${data.aws_iam_policy_document.kms_decrypt_env_vars.json}"
+}
+
+resource "aws_iam_policy" "search_logger_kinesis_to_es_secrets_manager_read_es_details" {
+  name        = "SearchLoggerKinesisToEsLambdaSecretsManagerReadEsDetails"
+  description = "Read the ES details from Secrets Manager"
+  policy      = "${data.aws_iam_policy_document.secrets_manager_es_details_read.json}"
+}
+
 resource "aws_iam_role" "search_logger_kinesis_to_es_lambda_role" {
   name               = "SearchLoggerKinesisToEsLambdaRole"
   assume_role_policy = "${data.aws_iam_policy_document.search_logger_kinesis_to_es_lambda_policy_document.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_kinesis_kms_decrypt" {
+  role       = "${aws_iam_role.search_logger_kinesis_to_es_lambda_role.id}"
+  policy_arn = "${aws_iam_policy.search_logger_kinesis_to_es_kms_decrypt_policy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_kinesis_secrets_manager_read_es_details" {
+  role       = "${aws_iam_role.search_logger_kinesis_to_es_lambda_role.id}"
+  policy_arn = "${aws_iam_policy.search_logger_kinesis_to_es_secrets_manager_read_es_details.arn}"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_basic_execution_role_attachement" {
