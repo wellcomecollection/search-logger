@@ -50,8 +50,8 @@ function processEvent(event, context, callback) {
           json
         ];
       } else {
-        console.info(
-          `Not creating record for invalid service: ${service}`,
+        console.error(
+          `Error: Not creating record for invalid service: ${service}`,
           payload
         );
         return [];
@@ -66,10 +66,29 @@ function processEvent(event, context, callback) {
       return acc.concat(tuple);
     }, []);
 
+  // Get only uniques
+  const services = body
+    .map(b => b.index && b.index._index)
+    .filter(Boolean)
+    .filter((service, i, arr) => arr.indexOf(service) === i)
+    .join(', ');
+
   if (body.length > 0) {
     esClient.bulk({ body: body }, function(err, resp) {
-      if (err) console.error(err);
-      else console.log('Success!');
+      if (err) {
+        console.error(err);
+      } else {
+        if (resp.errors === true) {
+          console.log(
+            'Error sending bulk to Elastic: ',
+            JSON.stringify(resp, null, 2)
+          );
+        } else {
+          console.log(
+            `Success on services: ${services} with ${body.length / 2} records`
+          );
+        }
+      }
     });
   }
 }
