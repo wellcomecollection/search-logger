@@ -35,19 +35,25 @@ function processEvent(event, context, callback) {
       const service = json.properties.service;
       const validService = validServices.indexOf(service) !== -1;
 
+      const document = {
+        event: json.event,
+        anonymousId: json.anonymousId,
+        network,
+        toggles: json.toggles,
+        data: json.data
+      };
+
       if (validService) {
         console.info(`Creating record for valid service: ${service}`);
         return [
           {
             index: {
-              _index: json.properties.service,
-              // We don't really care what this is called, but annoyingly it's
-              // hard to change on a service per service basis.
-              _type: 'search_log',
+              _index: service,
+              _type: service,
               _id: json.messageId
             }
           },
-          json
+          document
         ];
       } else {
         console.error(
