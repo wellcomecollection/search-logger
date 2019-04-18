@@ -48,7 +48,7 @@ function processEvent(event, context, callback) {
         return [
           {
             index: {
-              _index: service,
+              _index: `tracking_${service}`,
               _type: service,
               _id: json.messageId
             }
