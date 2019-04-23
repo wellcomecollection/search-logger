@@ -14,7 +14,7 @@ const secretName = 'prod/SearchLogger/es_details';
 const secretsManager = new AWS.SecretsManager({
   region: region
 });
-const validServices = ['search_logs', 'relevance_rating'];
+const validServices = ['search', 'relevance_rating'];
 
 function processEvent(event, context, callback) {
   const body = event.Records.map(function(record) {
