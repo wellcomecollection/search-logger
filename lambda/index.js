@@ -28,9 +28,6 @@ function processEvent(event, context, callback) {
           ? 'Wellcome-WiFi'
           : null;
 
-      json.network = network;
-      delete json.context.ip;
-
       // If we don't have a service, skip over it
       const service = json.properties.service;
       const validService = validServices.indexOf(service) !== -1;
@@ -39,8 +36,8 @@ function processEvent(event, context, callback) {
         event: json.event,
         anonymousId: json.anonymousId,
         network,
-        toggles: json.toggles,
-        data: json.data
+        toggles: json.properties.toggles,
+        data: json.properties.data
       };
 
       if (validService) {
