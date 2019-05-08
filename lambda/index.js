@@ -35,6 +35,7 @@ function processEvent(event, context, callback) {
       const document = {
         event: json.event,
         anonymousId: json.anonymousId,
+        timestamp: json.timestamp,
         network,
         toggles: json.properties.toggles,
         data: json.properties.data
