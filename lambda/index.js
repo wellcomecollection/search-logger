@@ -1,4 +1,4 @@
-const elasticsearch = require('elasticsearch');
+const elasticsearch = require("elasticsearch");
 
 let esClient;
 function setEsClient(credentials) {
@@ -8,24 +8,27 @@ function setEsClient(credentials) {
   });
 }
 
-const AWS = require('aws-sdk');
-const region = 'eu-west-1';
-const secretName = 'prod/SearchLogger/es_details';
+const AWS = require("aws-sdk");
+const region = "eu-west-1";
+const secretName = "prod/SearchLogger/es_details";
 const secretsManager = new AWS.SecretsManager({
   region: region
 });
-const validServices = ['search', 'relevance_rating'];
+const validServices = [
+  "search_relevance_implicit",
+  "search_relevance_explicit"
+];
 
 function processEvent(event, context, callback) {
   const body = event.Records.map(function(record) {
-    const payload = new Buffer(record.kinesis.data, 'base64').toString('utf-8');
+    const payload = new Buffer(record.kinesis.data, "base64").toString("utf-8");
     try {
       const json = JSON.parse(payload);
       const network =
-        json.context.ip === '195.143.129.132'
-          ? 'StaffCorporateDevices'
-          : json.context.ip === '195.143.129.232'
-          ? 'Wellcome-WiFi'
+        json.context.ip === "195.143.129.132"
+          ? "StaffCorporateDevices"
+          : json.context.ip === "195.143.129.232"
+          ? "Wellcome-WiFi"
           : null;
 
       // If we don't have a service, skip over it
@@ -46,8 +49,8 @@ function processEvent(event, context, callback) {
         return [
           {
             index: {
-              _index: `tracking_${service}`,
-              _type: service,
+              _index: service,
+              _type: "_doc",
               _id: json.messageId
             }
           },
@@ -75,7 +78,7 @@ function processEvent(event, context, callback) {
     .map(b => b.index && b.index._index)
     .filter(Boolean)
     .filter((service, i, arr) => arr.indexOf(service) === i)
-    .join(', ');
+    .join(", ");
 
   if (body.length > 0) {
     esClient.bulk({ body: body }, function(err, resp) {
@@ -84,7 +87,7 @@ function processEvent(event, context, callback) {
       } else {
         if (resp.errors === true) {
           console.log(
-            'Error sending bulk to Elastic: ',
+            "Error sending bulk to Elastic: ",
             JSON.stringify(resp, null, 2)
           );
         } else {
@@ -106,17 +109,17 @@ exports.handler = function(event, context) {
       data
     ) {
       if (err) {
-        console.info('Secrets Manager error');
+        console.info("Secrets Manager error");
         console.error(err);
       } else {
-        console.info('Secrets Manager success');
+        console.info("Secrets Manager success");
         try {
           const esCredentials = JSON.parse(data.SecretString);
           setEsClient(esCredentials);
           processEvent(event, context);
         } catch (e) {
           console.error(
-            'Secrets Manager error: `SecretString` was not a valid JSON string'
+            "Secrets Manager error: `SecretString` was not a valid JSON string"
           );
         }
       }
