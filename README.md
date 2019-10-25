@@ -1,5 +1,7 @@
 # search-logger
 
-Accepts data from segment.io via a kinesis stream, from there via a lambda into the reporting ES cluster.
+Accepts data from [Segment](https://segment.com/) via [Kinesis](https://segment.com/docs/destinations/amazon-kinesis/). 
 
-This is provisioned in the experience account.
+The kinesis stream triggers a lambda which writes into the ElasticCloud hosted [Reporting ES cluster](https://reporting.wellcomecollection.org).
+
+This is provisioned in the Experience AWS account.
