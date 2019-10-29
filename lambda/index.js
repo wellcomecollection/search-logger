@@ -23,7 +23,7 @@ const validServices = [
   "search_relevance_explicit"
 ];
 
-function processEvent(event, context, callback) {
+async function processEvent(event, context, callback) {
   const body = event.Records.map(function(record) {
     const payload = new Buffer(record.kinesis.data, "base64").toString("utf-8");
     try {
@@ -45,6 +45,7 @@ function processEvent(event, context, callback) {
         timestamp: json.timestamp,
         network,
         toggles: json.properties.toggles,
+        query: json.properties.query,
         data: json.properties.data
       };
 
@@ -84,22 +85,17 @@ function processEvent(event, context, callback) {
     .join(", ");
 
   if (body.length > 0) {
-    esClient.bulk({ body: body }, function(err, resp) {
-      if (err) {
-        console.error(err);
-      } else {
-        if (resp.errors === true) {
-          console.log(
-            "Error sending bulk to Elastic: ",
-            JSON.stringify(resp, null, 2)
-          );
-        } else {
-          console.log(
-            `Success on services: ${services} with ${body.length / 2} records`
-          );
-        }
-      }
-    });
+    const { body: bulkResponse } = await esClient.bulk({ body: body });
+    if (bulkResponse.errors) {
+      console.log(
+        "Error sending bulk to Elastic: ",
+        JSON.stringify(bulkResponse, null, 2)
+      );
+    } else {
+      console.log(
+        `Success on services: ${services} with ${body.length / 2} records`
+      );
+    }
   }
 }
 
