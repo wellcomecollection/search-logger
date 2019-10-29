@@ -11,6 +11,7 @@ terraform {
   required_version = ">= 0.11.10"
 
   backend "s3" {
+    role_arn       = "arn:aws:iam::130871440101:role/experience-developer"
     key            = "build-state/search-logger.tfstate"
     dynamodb_table = "terraform-locktable"
     region         = "eu-west-1"
@@ -21,4 +22,8 @@ terraform {
 provider "aws" {
   version = "~> 1.56.0"
   region  = "eu-west-1"
+
+  assume_role {
+    role_arn = "arn:aws:iam::130871440101:role/experience-admin"
+  }
 }

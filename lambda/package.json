@@ -4,9 +4,9 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn && zip -r search_logger_kinesis_to_es_lambda.zip node_modules index.js",
-    "deploy": "yarn build && aws s3 cp ./search_logger_kinesis_to_es_lambda.zip s3://search-logger/lambdas/search_logger_kinesis_to_es_lambda.zip"
+    "deploy": "yarn build && aws s3 --profile experience-developer cp ./search_logger_kinesis_to_es_lambda.zip s3://search-logger/lambdas/search_logger_kinesis_to_es_lambda.zip"
   },
   "dependencies": {
-    "elasticsearch": "^15.4.1"
+    "@elastic/elasticsearch": "^7.4.0"
   }
 }

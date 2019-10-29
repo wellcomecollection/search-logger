@@ -1,10 +1,14 @@
-const elasticsearch = require("elasticsearch");
+"use-strict";
+const { Client } = require("@elastic/elasticsearch");
 
 let esClient;
 function setEsClient(credentials) {
-  esClient = new elasticsearch.Client({
-    host: credentials.url,
-    httpAuth: `${credentials.username}:${credentials.password}`
+  esClient = new Client({
+    node: credentials.url,
+    auth: {
+      username: credentials.username,
+      password: credentials.password
+    }
   });
 }
 
@@ -35,7 +39,7 @@ function processEvent(event, context, callback) {
       const service = json.properties.service;
       const validService = validServices.indexOf(service) !== -1;
 
-      const document = {
+      const esDoc = {
         event: json.event,
         anonymousId: json.anonymousId,
         timestamp: json.timestamp,
@@ -50,11 +54,10 @@ function processEvent(event, context, callback) {
           {
             index: {
               _index: service,
-              _type: "_doc",
               _id: json.messageId
             }
           },
-          document
+          esDoc
         ];
       } else {
         console.error(
