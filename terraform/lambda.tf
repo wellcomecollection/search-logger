@@ -46,6 +46,8 @@ resource "aws_iam_policy" "search_logger_kinesis_to_es_secrets_manager_read_es_d
 resource "aws_iam_role" "search_logger_kinesis_to_es_lambda_role" {
   name               = "SearchLoggerKinesisToEsLambdaRole"
   assume_role_policy = data.aws_iam_policy_document.search_logger_kinesis_to_es_lambda_policy_document.json
+
+  tags = local.default_tags
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_kinesis_kms_decrypt" {
@@ -82,6 +84,8 @@ resource "aws_lambda_function" "search_logger_kinesis_to_es_lambda" {
   s3_key            = data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.key
   s3_object_version = data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.version_id
   publish           = true
+
+  tags = local.default_tags
 }
 
 resource "aws_lambda_event_source_mapping" "search_logger_kinesis_to_es_lambda_source_mapping" {

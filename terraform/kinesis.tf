@@ -8,7 +8,7 @@ resource "aws_kinesis_stream" "search_logger_stream" {
     "OutgoingBytes",
   ]
 
-  tags = {
+  tags = merge(local.default_tags, {
     Service = local.service_name
-  }
+  })
 }

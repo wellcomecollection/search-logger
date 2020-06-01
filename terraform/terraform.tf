@@ -8,7 +8,7 @@ locals {
 variable "segment_source_id" {}
 
 terraform {
-  required_version = ">= 0.11.10"
+  required_version = ">= 0.12.26"
 
   backend "s3" {
     role_arn       = "arn:aws:iam::130871440101:role/experience-developer"
@@ -16,14 +16,5 @@ terraform {
     dynamodb_table = "terraform-locktable"
     region         = "eu-west-1"
     bucket         = "wellcomecollection-infra"
-  }
-}
-
-provider "aws" {
-  version = "~> 2.7"
-  region  = "eu-west-1"
-
-  assume_role {
-    role_arn = "arn:aws:iam::130871440101:role/experience-admin"
   }
 }

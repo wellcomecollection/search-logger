@@ -33,9 +33,9 @@ resource "aws_iam_role" "search_logger_write_role" {
   name               = "${local.stream_name}Role"
   assume_role_policy = data.aws_iam_policy_document.search_logger_assume_role_policy.json
 
-  tags = {
+  tags = merge(local.default_tags, {
     Service = local.service_name
-  }
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "search_logger_role_attachment" {
