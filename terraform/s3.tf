@@ -7,6 +7,6 @@ resource "aws_s3_bucket" "search-logger" {
   }
 
   tags = {
-    Service = "${local.service_name}"
+    Service = local.service_name
   }
 }

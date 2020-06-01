@@ -20,7 +20,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 1.56.0"
+  version = "~> 2.7"
   region  = "eu-west-1"
 
   assume_role {

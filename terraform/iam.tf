@@ -9,7 +9,7 @@ data "aws_iam_policy_document" "search_logger_write_policy" {
 resource "aws_iam_policy" "search_logger_kinesis_write_policy" {
   name        = "${local.stream_name}WriteAccess"
   description = "Allows write access to the kinesis stream holding segment logs."
-  policy      = "${data.aws_iam_policy_document.search_logger_write_policy.json}"
+  policy      = data.aws_iam_policy_document.search_logger_write_policy.json
 }
 
 data "aws_iam_policy_document" "search_logger_assume_role_policy" {
@@ -19,7 +19,7 @@ data "aws_iam_policy_document" "search_logger_assume_role_policy" {
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = ["${var.segment_source_id}"]
+      values   = [var.segment_source_id]
     }
 
     principals {
@@ -31,18 +31,18 @@ data "aws_iam_policy_document" "search_logger_assume_role_policy" {
 
 resource "aws_iam_role" "search_logger_write_role" {
   name               = "${local.stream_name}Role"
-  assume_role_policy = "${data.aws_iam_policy_document.search_logger_assume_role_policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.search_logger_assume_role_policy.json
 
   tags = {
-    Service = "${local.service_name}"
+    Service = local.service_name
   }
 }
 
 resource "aws_iam_role_policy_attachment" "search_logger_role_attachment" {
-  role       = "${aws_iam_role.search_logger_write_role.name}"
-  policy_arn = "${aws_iam_policy.search_logger_kinesis_write_policy.arn}"
+  role       = aws_iam_role.search_logger_write_role.name
+  policy_arn = aws_iam_policy.search_logger_kinesis_write_policy.arn
 }
 
 output "aws_iam_role_search_logger_write_role_arn" {
-  value = "${aws_iam_role.search_logger_write_role.arn}"
+  value = aws_iam_role.search_logger_write_role.arn
 }
