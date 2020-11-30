@@ -1,5 +1,5 @@
 resource "aws_kinesis_stream" "search_logger_stream" {
-  name             = "${local.stream_name}"
+  name             = local.stream_name
   shard_count      = 1
   retention_period = 168
 
@@ -8,7 +8,7 @@ resource "aws_kinesis_stream" "search_logger_stream" {
     "OutgoingBytes",
   ]
 
-  tags = {
-    Service = "${local.service_name}"
-  }
+  tags = merge(local.default_tags, {
+    Service = local.service_name
+  })
 }

@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "search-logger" {
     enabled = true
   }
 
-  tags = {
-    Service = "${local.service_name}"
-  }
+  tags = merge(local.default_tags, {
+    Service = local.service_name
+  })
 }
