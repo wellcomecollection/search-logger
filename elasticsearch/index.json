@@ -1,0 +1,102 @@
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "csv_analyzer": {
+          "tokenizer": "csv_tokenizer"
+        }
+      },
+      "tokenizer": {
+        "csv_tokenizer": {
+          "type": "pattern",
+          "pattern": ","
+        }
+      }
+    }
+  },
+  "mappings": {
+    "dynamic": false,
+    "dynamic_templates": [
+      {
+        "page_querystring_params": {
+          "path_match": "page.query.*",
+          "mapping": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              },
+              "csv": {
+                "type": "text",
+                "analyzer": "csv_analyzer"
+              },
+              "number": {
+                "type": "long",
+                "ignore_malformed": true
+              },
+              "wildcard": {
+                "type": "wildcard"
+              }
+            }
+          }
+        }
+      },
+      {
+        "properties_params": {
+          "path_match": "properties.*",
+          "mapping": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              },
+              "csv": {
+                "type": "text",
+                "analyzer": "csv_analyzer"
+              },
+              "number": {
+                "type": "long",
+                "ignore_malformed": true
+              },
+              "wildcard": {
+                "type": "wildcard"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "properties": {
+      "anonymousId": {
+        "type": "keyword"
+      },
+      "@timestamp": {
+        "type": "date"
+      },
+      "type": {
+        "type": "keyword"
+      },
+      "page": {
+        "properties": {
+          "name": {
+            "type": "keyword"
+          },
+          "path": {
+            "type": "keyword"
+          },
+          "pathname": {
+            "type": "keyword"
+          },
+          "query": {
+            "dynamic": true,
+            "properties": {}
+          }
+        }
+      },
+      "properties": {
+        "dynamic": true,
+        "properties": {}
+      }
+    }
+  }
+}
