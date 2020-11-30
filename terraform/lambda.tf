@@ -78,7 +78,7 @@ data "aws_s3_bucket_object" "search_logger_kinesis_to_es_lambda_s3_object" {
 resource "aws_lambda_function" "search_logger_kinesis_to_es_lambda" {
   function_name     = "search_logger_kinesis_to_es_lambda"
   role              = aws_iam_role.search_logger_kinesis_to_es_lambda_role.arn
-  runtime           = "nodejs8.10"
+  runtime           = "nodejs12.x"
   handler           = "index.handler"
   s3_bucket         = data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.bucket
   s3_key            = data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.key
