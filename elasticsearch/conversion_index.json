@@ -73,8 +73,15 @@
       "anonymousId": {
         "type": "keyword"
       },
-      "sessionId": {
-        "type": "keyword"
+      "session": {
+        "fields": {
+          "id": {
+            "type": "keyword"
+          },
+          "timeout": {
+            "type": "number"
+          }
+        }
       },
       "type": {
         "type": "keyword"
