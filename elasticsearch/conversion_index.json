@@ -67,17 +67,32 @@
       }
     ],
     "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
       "anonymousId": {
         "type": "keyword"
       },
-      "@timestamp": {
-        "type": "date"
+      "session": {
+        "fields": {
+          "id": {
+            "type": "keyword"
+          },
+          "timeout": {
+            "type": "number"
+          }
+        }
       },
       "type": {
         "type": "keyword"
       },
       "source": {
-        "type": "keyword"
+        "type": "keyword",
+        "fields": {
+          "wildcard": {
+            "type": "wildcard"
+          }
+        }
       },
       "page": {
         "properties": {

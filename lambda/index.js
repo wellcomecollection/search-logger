@@ -71,6 +71,7 @@ function parseConversion(segmentEvent) {
   const esDoc = {
     "@timestamp": timestamp,
     anonymousId,
+    session: segmentProperties.session,
     type: segmentProperties.type,
     source: segmentProperties.source,
     page: segmentProperties.page,
