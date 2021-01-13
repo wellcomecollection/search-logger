@@ -74,12 +74,12 @@
         "type": "keyword"
       },
       "session": {
-        "fields": {
+        "properties": {
           "id": {
             "type": "keyword"
           },
           "timeout": {
-            "type": "number"
+            "type": "long"
           }
         }
       },
