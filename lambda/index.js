@@ -61,6 +61,15 @@ async function processEvent(event, context, callback) {
   }
 }
 
+function deDotFieldNames(obj) {
+  return Object.entries(obj).reduce((acc, [key, val]) => {
+    return {
+      ...acc,
+      [key.replace(/\./g, "_")]: val,
+    };
+  }, {});
+}
+
 function parseConversion(segmentEvent) {
   const {
     messageId,
@@ -74,7 +83,10 @@ function parseConversion(segmentEvent) {
     session: segmentProperties.session,
     type: segmentProperties.type,
     source: segmentProperties.source,
-    page: segmentProperties.page,
+    page: {
+      ...segmentProperties.page,
+      query: deDotFieldNames(segmentProperties.page.query),
+    },
     properties: segmentProperties.properties,
   };
 
@@ -137,7 +149,9 @@ function parseSearch(json) {
   }
 }
 
-exports.handler = function (event, context) {
+module.exports.parseConversion = parseConversion;
+
+module.exports.handler = function (event, context) {
   if (esClient) {
     processEvent(event, context);
   } else {
