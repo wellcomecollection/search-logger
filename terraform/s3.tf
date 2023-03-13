@@ -1,9 +1,9 @@
 resource "aws_s3_bucket" "search-logger" {
   bucket = "search-logger"
 
-  tags = merge(local.default_tags, {
+  tags = {
     Service = local.service_name
-  })
+  }
 }
 
 resource "aws_s3_bucket_acl" "search-logger" {
