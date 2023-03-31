@@ -46,8 +46,6 @@ resource "aws_iam_policy" "search_logger_kinesis_to_es_secrets_manager_read_es_d
 resource "aws_iam_role" "search_logger_kinesis_to_es_lambda_role" {
   name               = "SearchLoggerKinesisToEsLambdaRole"
   assume_role_policy = data.aws_iam_policy_document.search_logger_kinesis_to_es_lambda_policy_document.json
-
-  tags = local.default_tags
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_kinesis_kms_decrypt" {
@@ -70,7 +68,7 @@ resource "aws_iam_role_policy_attachment" "lambda_kinesis_execution_role_attache
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole"
 }
 
-data "aws_s3_bucket_object" "search_logger_kinesis_to_es_lambda_s3_object" {
+data "aws_s3_object" "search_logger_kinesis_to_es_lambda_s3_object" {
   bucket = local.lambda_bucket_name
   key    = local.lambda_file_name
 }
@@ -80,12 +78,10 @@ resource "aws_lambda_function" "search_logger_kinesis_to_es_lambda" {
   role              = aws_iam_role.search_logger_kinesis_to_es_lambda_role.arn
   runtime           = "nodejs12.x"
   handler           = "index.handler"
-  s3_bucket         = data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.bucket
-  s3_key            = data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.key
-  s3_object_version = data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.version_id
+  s3_bucket         = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.bucket
+  s3_key            = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.key
+  s3_object_version = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.version_id
   publish           = true
-
-  tags = local.default_tags
 }
 
 resource "aws_lambda_event_source_mapping" "search_logger_kinesis_to_es_lambda_source_mapping" {
@@ -95,5 +91,5 @@ resource "aws_lambda_event_source_mapping" "search_logger_kinesis_to_es_lambda_s
 }
 
 output "lambda_s3_version" {
-  value = data.aws_s3_bucket_object.search_logger_kinesis_to_es_lambda_s3_object.version_id
+  value = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.version_id
 }
