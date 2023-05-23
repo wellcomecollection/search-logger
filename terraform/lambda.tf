@@ -82,6 +82,8 @@ resource "aws_lambda_function" "search_logger_kinesis_to_es_lambda" {
   s3_key            = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.key
   s3_object_version = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.version_id
   publish           = true
+
+  timeout = 60
 }
 
 resource "aws_lambda_event_source_mapping" "search_logger_kinesis_to_es_lambda_source_mapping" {
