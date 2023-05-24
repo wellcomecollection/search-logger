@@ -1,6 +1,6 @@
 # search-logger
 
-This is a Lambda function which logs user searches to the reporting cluster.
+This is a tool which logs user searches to our "reporting" Elasticsearch cluster.
 These logs include:
 
 *   what search term somebody typed in
@@ -8,7 +8,7 @@ These logs include:
 *   which results (if any) that they clicked on.
 
 We use this to analyse search behaviour and improve our queries.
-For example, we can look at searches that return 0 results and discuss whether we should be returning something for those searches.
+For example, we can look at searches that return 0 results and discuss whether there really are no results, or whether we should change the results we return.
 
 ## How search events get logged
 
@@ -29,6 +29,11 @@ flowchart LR
 Our website [sends tracking events][track.ts] to [Segment].
 Those segments are forwarded to a [Kinesis data stream][kinesis], which triggers a Lambda function.
 That Lambda function writes the search logs into the [reporting cluster].
+
+This repo contains:
+
+*   the source code for the Lambda function
+*   the Terraform definitions for the Kinesis stream and the Lambda function
 
 [track.ts]: https://github.com/wellcomecollection/wellcomecollection.org/blob/9115873707b411a1ecfe2a93f5ebf7f240861c8f/common/services/conversion/track.ts#L6
 [Segment]: https://segment.com/
