@@ -30,22 +30,22 @@ resource "aws_iam_policy" "search_logger_kinesis_to_es_secrets_manager_read_es_d
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_kinesis_kms_decrypt" {
-  role       = module.search_logger_lambda.lambda_role.id
+  role       = module.search_logger.lambda_role.id
   policy_arn = aws_iam_policy.search_logger_kinesis_to_es_kms_decrypt_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_kinesis_secrets_manager_read_es_details" {
-  role       = module.search_logger_lambda.lambda_role.id
+  role       = module.search_logger.lambda_role.id
   policy_arn = aws_iam_policy.search_logger_kinesis_to_es_secrets_manager_read_es_details.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_basic_execution_role_attachement" {
-  role       = module.search_logger_lambda.lambda_role.id
+  role       = module.search_logger.lambda_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_kinesis_execution_role_attachement" {
-  role       = module.search_logger_lambda.lambda_role.id
+  role       = module.search_logger.lambda_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole"
 }
 
@@ -56,15 +56,20 @@ data "aws_s3_object" "search_logger_kinesis_to_es_lambda_s3_object" {
 
 moved {
   from = aws_lambda_function.search_logger_kinesis_to_es_lambda
-  to = module.search_logger_lambda.aws_lambda_function.main
+  to = module.search_logger.aws_lambda_function.main
 }
 
 moved {
   from = aws_iam_role.search_logger_kinesis_to_es_lambda_role
-  to   = module.search_logger_lambda.aws_iam_role.lambda
+  to   = module.search_logger.aws_iam_role.lambda
 }
 
-module "search_logger_lambda" {
+moved {
+  from = module.search_logger_lambda
+  to   = module.search_logger
+}
+
+module "search_logger" {
   source = "git@github.com:wellcomecollection/terraform-aws-lambda.git?ref=v1.2.0"
 
   name = "search_logger_kinesis_to_es_lambda"
@@ -76,6 +81,7 @@ module "search_logger_lambda" {
   s3_object_version = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.version_id
   publish           = true
 
+  # used to be 3 seconds
   timeout = 60
 
   error_alarm_topic_arn = local.lambda_error_alert_arn
@@ -83,7 +89,7 @@ module "search_logger_lambda" {
 
 resource "aws_lambda_event_source_mapping" "search_logger_kinesis_to_es_lambda_source_mapping" {
   event_source_arn  = aws_kinesis_stream.search_logger_stream.arn
-  function_name     = module.search_logger_lambda.lambda.arn
+  function_name     = module.search_logger.lambda.arn
   starting_position = "LATEST"
 }
 
