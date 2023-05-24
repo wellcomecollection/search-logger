@@ -54,21 +54,6 @@ data "aws_s3_object" "search_logger_kinesis_to_es_lambda_s3_object" {
   key    = local.lambda_file_name
 }
 
-moved {
-  from = aws_lambda_function.search_logger_kinesis_to_es_lambda
-  to = module.search_logger.aws_lambda_function.main
-}
-
-moved {
-  from = aws_iam_role.search_logger_kinesis_to_es_lambda_role
-  to   = module.search_logger.aws_iam_role.lambda
-}
-
-moved {
-  from = module.search_logger_lambda
-  to   = module.search_logger
-}
-
 module "search_logger" {
   source = "git@github.com:wellcomecollection/terraform-aws-lambda.git?ref=v1.2.0"
 
