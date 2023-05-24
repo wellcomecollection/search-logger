@@ -66,7 +66,9 @@ module "search_logger" {
   s3_object_version = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.version_id
   publish           = true
 
-  # used to be 3 seconds
+  # Note: this timeout was originally 3 seconds, but we increased it when
+  # we saw the Lambda timing out.  It processes events from Kinesis in batches
+  # of 100, so this should be plenty.
   timeout = 60
 
   error_alarm_topic_arn = local.lambda_error_alert_arn
