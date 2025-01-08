@@ -10,6 +10,9 @@
     "@elastic/elasticsearch": "^7.4.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.799.0"
+    "@aws-sdk/client-s3": "3.703.0",
+    "@aws-sdk/client-secrets-manager": "^3.723.0",
+    "@aws-sdk/credential-providers": "^3.699.0"
   }
 }
+

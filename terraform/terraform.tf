@@ -13,7 +13,9 @@ terraform {
   required_version = ">= 0.12.26"
 
   backend "s3" {
-    role_arn       = "arn:aws:iam::130871440101:role/experience-developer"
+    assume_role = {
+      role_arn = "arn:aws:iam::130871440101:role/experience-developer"
+    }
     key            = "build-state/search-logger.tfstate"
     dynamodb_table = "terraform-locktable"
     region         = "eu-west-1"
@@ -25,8 +27,9 @@ data "terraform_remote_state" "monitoring" {
   backend = "s3"
 
   config = {
-    role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
-
+    assume_role = {
+      role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
+    }
     bucket = "wellcomecollection-platform-infra"
     key    = "terraform/monitoring.tfstate"
     region = "eu-west-1"

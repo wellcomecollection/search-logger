@@ -12,12 +12,30 @@ function setEsClient(credentials) {
   });
 }
 
-const AWS = require("aws-sdk");
+import {
+  GetSecretValueCommand,
+  SecretsManagerClient,
+} from '@aws-sdk/client-secrets-manager';
+
 const region = "eu-west-1";
 const secretName = "prod/SearchLogger/es_details";
-const secretsManager = new AWS.SecretsManager({
-  region: region,
+
+const secretsManager = new SecretsManagerClient({
+  region,
 });
+
+async function getSecret(secretName) {
+  try {
+    const response = await secretsManager.send(
+      new GetSecretValueCommand({ SecretId: secretName })
+    );
+    return response.SecretString;
+  } catch (err) {
+    console.error(`Error fetching secret: ${err}`);
+  }
+
+}
+
 
 async function processEvent(event, context, callback) {
   const body = event.Records.map(function (record) {
@@ -151,29 +169,12 @@ function parseSearch(json) {
 
 module.exports.parseConversion = parseConversion;
 
-module.exports.handler = function (event, context) {
+module.exports.handler = async function (event, context) {
   if (esClient) {
     processEvent(event, context);
   } else {
-    secretsManager.getSecretValue(
-      { SecretId: secretName },
-      function (err, data) {
-        if (err) {
-          console.info("Secrets Manager error");
-          console.error(err);
-        } else {
-          console.info("Secrets Manager success");
-          try {
-            const esCredentials = JSON.parse(data.SecretString);
-            setEsClient(esCredentials);
-            processEvent(event, context);
-          } catch (e) {
-            console.error(
-              "Secrets Manager error: `SecretString` was not a valid JSON string"
-            );
-          }
-        }
-      }
-    );
+    const secretString = await getSecret(secretName)
+    setEsClient(JSON.parse(secretString))
+    processEvent(event, context);
   }
 };

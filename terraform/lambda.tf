@@ -59,7 +59,7 @@ module "search_logger" {
 
   name = "search_logger_kinesis_to_es_lambda"
 
-  runtime           = "nodejs12.x"
+  runtime           = "nodejs20.x"
   handler           = "index.handler"
   s3_bucket         = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.bucket
   s3_key            = data.aws_s3_object.search_logger_kinesis_to_es_lambda_s3_object.key
