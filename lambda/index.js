@@ -12,10 +12,10 @@ function setEsClient(credentials) {
   });
 }
 
-import {
+const {
   GetSecretValueCommand,
   SecretsManagerClient,
-} from '@aws-sdk/client-secrets-manager';
+} = require('@aws-sdk/client-secrets-manager') 
 
 const region = "eu-west-1";
 const secretName = "prod/SearchLogger/es_details";
