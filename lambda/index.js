@@ -1,5 +1,6 @@
 "use-strict";
 const { Client } = require("@elastic/elasticsearch");
+const util = require('util')
 
 let esClient;
 function setEsClient(credentials) {
@@ -36,12 +37,13 @@ async function getSecret(secretName) {
 
 }
 
-
 async function processEvent(event, context, callback) {
   const body = event.Records.map(function (record) {
-    const payload = new Buffer(record.kinesis.data, "base64").toString("utf-8");
+    // const payload = new Buffer(record.kinesis.data, "base64").toString("utf-8");
+    const payload = Buffer.from(record.kinesis.data, "base64").toString("utf-8")
     try {
       const json = JSON.parse(payload);
+      console.log(util.inspect(json, { showHidden: false, depth: null }))
       if (json.event === "conversion") {
         return parseConversion(json);
       } else {
@@ -77,7 +79,7 @@ async function processEvent(event, context, callback) {
       );
     }
   }
-}
+};
 
 function deDotFieldNames(obj) {
   return Object.entries(obj).reduce((acc, [key, val]) => {
@@ -86,7 +88,7 @@ function deDotFieldNames(obj) {
       [key.replace(/\./g, "_")]: val,
     };
   }, {});
-}
+};
 
 function parseConversion(segmentEvent) {
   const {
@@ -178,3 +180,5 @@ module.exports.handler = async function (event, context) {
     processEvent(event, context);
   }
 };
+
+module.exports.processEvent = processEvent;

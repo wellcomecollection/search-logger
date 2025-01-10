@@ -76,7 +76,7 @@ module "search_logger" {
 
 resource "aws_lambda_event_source_mapping" "search_logger_kinesis_to_es_lambda_source_mapping" {
   event_source_arn  = aws_kinesis_stream.search_logger_stream.arn
-  function_name     = module.search_logger.lambda.arn
+  function_name     = "${module.search_logger.lambda.arn}:PROD"
   starting_position = "LATEST"
 }
 
