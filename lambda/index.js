@@ -64,7 +64,7 @@ async function processEvent(event, context, callback) {
     .join(", ");
 
   if (body.length > 0) {
-    const { body: bulkResponse } = await esClient.bulk({ body: body });
+    const bulkResponse = await esClient.bulk({ body: body });
     if (bulkResponse.errors) {
       console.log(
         "Error sending bulk to Elastic: ",
