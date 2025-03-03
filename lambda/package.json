@@ -10,6 +10,6 @@
     "@elastic/elasticsearch": "^7.4.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.799.0"
+    "aws-sdk": "^2.814.0"
   }
 }
