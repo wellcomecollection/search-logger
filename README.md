@@ -1,5 +1,7 @@
 # search-logger
 
+> **Retired on 2026-10-29.** The website stopped sending events through Segment in October 2025, so this pipeline had no input. Its AWS resources have been removed and this repository is archived. Search events already written to the reporting cluster are unaffected.
+
 This is a tool which logs user searches to our "reporting" Elasticsearch cluster.
 These logs include:
 
